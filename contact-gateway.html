@@ -1,0 +1,287 @@
+<!-- CONTACT FLOW CONTAINER (Gateway, steps 1–5, with intl-tel-input) -->
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+
+<!-- intl-tel-input styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+
+<div class="ds-contact-container">
+  <div class="progress-container">
+    <div class="progress-step active" id="step-1">1</div>
+    <div class="progress-step" id="step-2">2</div>
+    <div class="progress-step" id="step-3">3</div>
+    <div class="progress-step" id="step-4">4</div>
+    <div class="progress-step" id="step-5">5</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div class="form-container">
+    <!-- Step 1: Name -->
+    <div class="form-step active" id="step1">
+      <div class="form-group">
+        <label for="name"><strong>Your Name</strong></label>
+        <input type="text" id="name" placeholder="John Doe">
+      </div>
+      <div class="btn-container">
+        <div></div>
+        <button class="btn-next" onclick="nextStep(1)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Email -->
+    <div class="form-step" id="step2">
+      <div class="form-group">
+        <label for="email"><strong>Your Email</strong></label>
+        <input type="email" id="email" placeholder="john.doe@example.com">
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(2)">Previous</button>
+        <button class="btn-next" onclick="nextStep(2)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3: WhatsApp (intl-tel-input) -->
+    <div class="form-step" id="step3">
+      <div class="form-group">
+        <label for="whatsApp"><strong>Your WhatsApp Number</strong></label>
+        <input type="tel" id="whatsApp" class="lg" placeholder="7XXXXXXXX">
+        <small class="hint">Choose your flag, then enter mobile number without the leading zero.</small>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(3)">Previous</button>
+        <button class="btn-next" onclick="nextStep(3)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 4: LinkedIn (optional + Skip) -->
+    <div class="form-step" id="step4">
+      <div class="form-group">
+        <label for="linkedin"><strong>LinkedIn Profile URL <span style="opacity:.8;">(optional)</span></strong></label>
+        <input type="url" id="linkedin" placeholder="https://www.linkedin.com/in/johndoe (optional)">
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(4)">Previous</button>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-next" onclick="skipLinkedin()">Skip</button>
+          <button class="btn-next" onclick="nextStep(4)">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: NHS? -->
+    <div class="form-step" id="step5">
+      <div class="form-group">
+        <label><strong>Looking for NHS jobs?</strong></label>
+        <div class="nhs-options">
+          <div class="nhs-option" onclick="selectNhsOption(true)"><p>Yes</p></div>
+          <div class="nhs-option selected" onclick="selectNhsOption(false)"><p>No</p></div>
+        </div>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(5)">Previous</button>
+        <button class="btn-next" onclick="finishGateway()">Next</button>
+      </div>
+    </div>
+
+    <!-- Redirecting (hidden until finish) -->
+    <div class="form-step" id="redirecting" style="display:none;">
+      <div class="redirecting">
+        <div class="lottie-container" id="lottie-container"></div>
+        <p style="color:#fff; margin-top:12px; font-weight:600;">Finding the best packages for you…</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Styles -->
+<style>
+  .ds-contact-container { background:#24101a; border-radius:15px; width:1000px; max-width:100%; overflow:hidden; margin:0 auto; }
+  .progress-container { display:flex; justify-content:space-between; padding:20px 40px; position:relative; }
+  .progress-step { width:30px; height:30px; border-radius:50%; background:#e0e0e0; display:flex; justify-content:center; align-items:center; font-weight:bold; z-index:2; color:#24101a; }
+  .progress-step.active { background:#411c30; color:#fff; }
+  .progress-step.completed { background:#f6b900; color:#24101a; }
+  .progress-bar { position:absolute; height:4px; background:#e0e0e0; top:33px; left:40px; right:40px; z-index:1; }
+  .progress-fill { height:100%; background:#f6b900; width:0%; transition:width .5s ease; }
+  .form-container { padding:30px; }
+  .form-step { display:none; }
+  .form-step.active { display:block; animation:fadeIn .5s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .form-group { margin-bottom:30px; text-align:center; }
+  .form-group label { display:block; margin-bottom:15px; font-weight:500; color:#fff; font-size:18px; }
+  .form-group input { width:100%; padding:15px; border:2px solid #ddd; border-radius:17px; font-size:16px; transition:border .3s ease; text-align:center; max-width:420px; margin:0 auto; display:block; background:#fff; color:#24101a; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+  .form-group input:focus { border-color:#411c30; outline:none; }
+  .btn-container { display:flex; justify-content:space-between; margin-top:30px; }
+  button { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s ease; }
+  .btn-prev { background:#ffe590; color:#411c30; }
+  .btn-prev:hover { background:#f6b900; }
+  .btn-next { background:#f6b900; color:#411c30; }
+  .btn-next:hover { background:#ffe590; }
+  .nhs-options { display:flex; gap:15px; justify-content:center; }
+  .nhs-option { flex:1; text-align:center; padding:15px; border:2px solid #ddd; border-radius:17px; cursor:pointer; transition:all .3s ease; max-width:150px; color:#411c30; background:#fff; }
+  .nhs-option:hover { border-color:#411c30; }
+  .nhs-option.selected { border-color:#411c30; background:#f6b900; }
+  .redirecting { text-align:center; padding:20px; }
+  .lottie-container { width:100%; max-width:300px; margin:0 auto; }
+
+  /* intl-tel-input tweaks */
+  .iti { display:block; margin: 0 auto; max-width:420px; }
+  .iti--separate-dial-code .iti__selected-dial-code { font-family:'Poppins',sans-serif; font-weight:600; }
+  .iti input { text-align:left !important; padding-left: 86px !important; }
+
+  @media (max-width:600px){
+    .ds-contact-container{ margin:10px; }
+    .form-container{ padding:20px; }
+    .progress-container{ padding:20px; }
+    .progress-bar{ left:20px; right:20px; }
+    .nhs-options{ flex-direction:column; align-items:center; }
+    .nhs-option{ width:100%; max-width:250px; }
+  }
+
+  /* Gold placeholders */
+  .ds-contact-container input::placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input::-webkit-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input:-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input::-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+</style>
+
+<!-- Scripts: intl-tel-input + utils + Lottie -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
+
+<script>
+  let currentStep = 1;
+  let isNhsJob = false;
+  const userData = { name:'', email:'', whatsapp:'', linkedin:'' };
+  let iti; // intl-tel-input instance
+
+  function updateProgress(){
+    document.getElementById('progress-fill').style.width = ((currentStep - 1) / 5) * 100 + '%';
+    for (let i=1;i<=5;i++){
+      const step = document.getElementById('step-' + i);
+      if (i < currentStep) step.className = 'progress-step completed';
+      else if (i === currentStep) step.className = 'progress-step active';
+      else step.className = 'progress-step';
+    }
+  }
+
+  function initIntlTel(){
+    const input = document.getElementById('whatsApp');
+    if (!window.intlTelInput || !input) return;
+
+    iti = window.intlTelInput(input, {
+      initialCountry: 'auto',
+      preferredCountries: ['lk','gb','us','au'],
+      separateDialCode: true,
+      nationalMode: true,
+      utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js',
+      geoIpLookup: (cb) => {
+        fetch('https://ipapi.co/json/')
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(d => cb((d && d.country) ? d.country.toLowerCase() : 'lk'))
+          .catch(() => cb('lk'));
+      }
+    });
+  }
+
+  function nextStep(step){
+    if (step === 1){
+      const v = document.getElementById('name').value.trim();
+      if (!v){ alert('Please enter your name'); return; }
+      userData.name = v;
+    } else if (step === 2){
+      const v = document.getElementById('email').value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if (!valid){ alert('Please enter a valid email'); return; }
+      userData.email = v;
+    } else if (step === 3){
+      const input = document.getElementById('whatsApp');
+      if (!iti || !iti.isValidNumber()) { alert('Please enter a valid WhatsApp number'); return; }
+      userData.whatsapp = iti.getNumber(); // E.164 (e.g., +9471...)
+    } else if (step === 4){
+      const v = document.getElementById('linkedin').value.trim();
+      if (v && !/^https?:\/\/.+/i.test(v)){ alert('Please enter a valid LinkedIn URL'); return; }
+      userData.linkedin = v; // optional
+    }
+    document.getElementById('step' + step).classList.remove('active');
+    currentStep = step + 1;
+    document.getElementById('step' + currentStep).classList.add('active');
+    updateProgress();
+  }
+
+  function prevStep(step){
+    document.getElementById('step' + step).classList.remove('active');
+    currentStep = step - 1;
+    document.getElementById('step' + currentStep).classList.add('active');
+    updateProgress();
+  }
+
+  function skipLinkedin(){
+    document.getElementById('linkedin').value = '';
+    userData.linkedin = '';
+    nextStep(4);
+  }
+
+  function selectNhsOption(value){
+    isNhsJob = value;
+    const options = document.querySelectorAll('.nhs-option');
+    options[0].classList.toggle('selected', value);
+    options[1].classList.toggle('selected', !value);
+  }
+
+  function finishGateway(){
+    // Show "finding packages"
+    document.getElementById('step5').classList.remove('active');
+    const redirecting = document.getElementById('redirecting');
+    redirecting.style.display = 'block';
+    redirecting.classList.add('active');
+
+    // Lottie
+    document.getElementById('lottie-container').innerHTML = `
+      <lottie-player
+        src="https:your-lottie.json"
+        background="transparent" speed="1" loop autoplay>
+      </lottie-player>
+    `;
+
+    // Persist gateway data for next page
+    try {
+      sessionStorage.setItem('ds_prefill', JSON.stringify({
+        name: userData.name || "",
+        email: userData.email || "",
+        whatsapp: userData.whatsapp || "",
+        linkedin: userData.linkedin || "",
+        isNhsJob: !!isNhsJob
+      }));
+    } catch (e) {}
+
+    // NHS direct
+    if (isNhsJob) {
+      setTimeout(() => { window.location.href = '/contact-nhs'; }, 900);
+      return;
+    }
+
+    // Geo route
+    fetch('https://ipapi.co/json/')
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(data => {
+        const cc = (data && data.country || '').toUpperCase();
+        let dest = '/contact-us';
+        if (cc === 'LK') dest = '/contact-lk';
+        else if (cc === 'US') dest = '/contact-us';
+        else if (cc === 'GB' || cc === 'UK') dest = '/contact-uk';
+        else if (cc === 'AU') dest = '/contact-au';
+        setTimeout(() => { window.location.href = dest; }, 900);
+      })
+      .catch(() => setTimeout(() => { window.location.href = '/contact-us'; }, 900));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateProgress();
+    // intl-tel-input may still be loading (defer); retry shortly if missing
+    if (window.intlTelInput) initIntlTel(); else setTimeout(initIntlTel, 150);
+  });
+</script>

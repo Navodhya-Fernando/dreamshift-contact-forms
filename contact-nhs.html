@@ -1,0 +1,254 @@
+<!-- CONTACT FOLLOW-UP (NHS (UK); steps 6–Calendly) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+
+<div class="ds-contact-container">
+  <div class="progress-container">
+    <div class="progress-step completed">1</div>
+    <div class="progress-step completed">2</div>
+    <div class="progress-step completed">3</div>
+    <div class="progress-step completed">4</div>
+    <div class="progress-step completed">5</div>
+    <div class="progress-step active" id="p6">6</div>
+    <div class="progress-step" id="p7">7</div>
+    <div class="progress-step" id="p8">8</div>
+    <div class="progress-step" id="p9">9</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div class="form-container">
+    <!-- STEP 6: Jobs -->
+    <div class="form-step active" id="step6">
+      <div class="form-group">
+        <label><strong>Job(s) you’re looking to apply</strong></label>
+        <textarea id="jobs" rows="3" placeholder="Physiotherapist; Health visitor"></textarea>
+      </div>
+      <div class="btn-container">
+        <div></div>
+        <button class="btn-next" onclick="nextStep(6)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Locations -->
+    <div class="form-step" id="step7">
+      <div class="form-group">
+        <label><strong>Location(s) you’re targeting</strong></label>
+        <textarea id="locations" rows="2" placeholder="Manchester; London"></textarea>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(7)">Previous</button>
+        <button class="btn-next" onclick="nextStep(7)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: Package (Book a call now here) -->
+    <div class="form-step" id="step8">
+      <div class="form-group">
+        <label><strong>Choose a package</strong></label>
+        <div class="nhs-options" id="pkgWrap"></div>
+        <p class="hint">Or skip for now.</p>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(8)">Previous</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-next" onclick="skipPackageAndBook()">Skip</button>
+          <button class="btn-primary" onclick="saveAndBook()">Book a call now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 9: Calendly -->
+    <div class="form-step" id="calendlyStep">
+      <div class="form-group">
+        <h3 style="color:#fff; margin-bottom:6px; font-weight:700;">Congratulations!</h3>
+        <h4 style="color:#ffe8a8; margin-bottom:14px;">It’s time to book your call.</h4>
+        <div id="calendlyEmbed" class="calendly-inline-widget" style="min-width:320px;height:720px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Styles -->
+<style>
+  .ds-contact-container { background:#24101a; border-radius:15px; width:1000px; max-width:100%; overflow:hidden; margin:0 auto; }
+  .progress-container { display:flex; justify-content:space-between; padding:20px 40px; position:relative; }
+  .progress-step { width:30px; height:30px; border-radius:50%; background:#e0e0e0; display:flex; justify-content:center; align-items:center; font-weight:bold; z-index:2; color:#24101a;}
+  .progress-step.active { background:#411c30; color:#fff; }
+  .progress-step.completed { background:#f6b900; color:#24101a; }
+  .progress-bar { position:absolute; height:4px; background:#e0e0e0; top:33px; left:40px; right:40px; z-index:1; }
+  .progress-fill { height:100%; background:#f6b900; width:0%; transition:width .5s ease; }
+
+  .form-container { padding:30px; }
+  .form-step { display:none; }
+  .form-step.active { display:block; animation:fadeIn 0.5s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  .form-group { margin-bottom:30px; text-align:center; }
+  .form-group label { display:block; margin-bottom:15px; font-weight:500; color:#fff; font-size:18px; }
+  .form-group input, .form-group textarea { width:100%; padding:15px; border:2px solid #ddd; border-radius:17px; font-size:16px; transition:border .3s ease; text-align:center; max-width:420px; margin:0 auto; display:block; color:#24101a; background:#fff; }
+  .form-group input:focus, .form-group textarea:focus { border-color:#411c30; outline:none; }
+  .hint{ color:#ffe8a8; margin-top:8px; }
+
+  .btn-container { display:flex; justify-content:space-between; margin-top:30px; }
+  .btn-prev { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; background:#ffe590; color:#411c30; }
+  .btn-prev:hover { background:#f6b900; }
+  .btn-next { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; background:#f6b900; color:#411c30; }
+  .btn-next:hover { background:#ffe590; }
+  .btn-primary { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:700; cursor:pointer; background:#fff; color:#411c30; border:2px solid #ddd; }
+  .btn-primary:hover { border-color:#411c30; }
+
+  .nhs-options { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
+  .pkg-btn { flex:1; text-align:center; padding:15px; border:2px solid #ddd; border-radius:17px; cursor:pointer; transition:all .3s ease; max-width:260px; color:#411c30; background:#fff; }
+  .pkg-btn:hover { border-color:#411c30; }
+  .pkg-btn.active { border-color:#411c30; background:#f6b900; }
+
+  /* Make placeholders visible & gold */
+  .ds-contact-container input::placeholder,
+  .ds-contact-container textarea::placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input::-webkit-input-placeholder,
+  .ds-contact-container textarea::-webkit-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input:-ms-input-placeholder,
+  .ds-contact-container textarea:-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+  .ds-contact-container input::-ms-input-placeholder,
+  .ds-contact-container textarea::-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
+
+  /* Poppins for package buttons/prices */
+  .pkg-btn, .pkg-price { font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  .pkg-price { font-weight:700; letter-spacing:0.2px; }
+</style>
+
+<script>
+/* ========= CONFIG ========= */
+const GAS_ENDPOINT = 'https://your-app-script-url';
+const CALENDLY_URL = 'https://calendly.com/your-booking/30min';
+const PACKAGE_PRICES = { essential: '£69', advanced: '£149', ultimate: '£199' };
+/* ========================== */
+
+const state = {
+  name:'', email:'', isNhsJob:false, whatsapp:'', linkedin:'',
+  jobs:'', locations:'', pkgId:'', pkgLabel:''
+};
+
+const firstStep = 6, lastStep = 9;
+let currentStep = 6;
+
+function updateProgress(){
+  document.getElementById('progress-fill').style.width = ((currentStep - 1) / 9) * 100 + '%';
+  for (let i = 6; i <= 9; i++){
+    const el = document.getElementById('p'+i);
+    if (!el) continue;
+    el.classList.remove('active');
+    if (i < currentStep) el.classList.add('completed');
+    if (i === currentStep){ el.classList.add('active'); el.classList.remove('completed'); }
+  }
+}
+function showStep(n){
+  for (let i = firstStep; i <= lastStep; i++){
+    const s = document.getElementById('step'+i);
+    if (s) s.classList.toggle('active', i === n);
+  }
+  currentStep = n; updateProgress();
+}
+function nextStep(step){
+  if (step === 6){ state.jobs = (document.getElementById('jobs').value || '').trim(); }
+  if (step === 7){ state.locations = (document.getElementById('locations').value || '').trim(); }
+  showStep(Math.min(step + 1, lastStep));
+}
+function prevStep(step){ showStep(Math.max(step - 1, firstStep)); }
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function buildPackages(){
+  const wrap = document.getElementById('pkgWrap');
+  wrap.innerHTML = '';
+  [
+    { id:'essential', label:'Essential Package', price: PACKAGE_PRICES.essential },
+    { id:'advanced',  label:'Advanced Package',  price: PACKAGE_PRICES.advanced  },
+    { id:'ultimate',  label:'Ultimate Career Package', price: PACKAGE_PRICES.ultimate }
+  ].forEach(p=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pkg-btn';
+    btn.innerHTML = `<span class="pkg-label">${escapeHtml(p.label)}</span> — <span class="pkg-price">${escapeHtml(p.price)}</span>`;
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state.pkgId = p.id;
+      state.pkgLabel = `${p.label} — ${p.price}`;
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function restoreGatewayData(){
+  try{
+    const raw = sessionStorage.getItem('ds_prefill');
+    if (raw){
+      const d = JSON.parse(raw);
+      state.name = d.name || '';
+      state.email = d.email || '';
+      state.isNhsJob = !!d.isNhsJob;
+      state.whatsapp = d.whatsapp || '';
+      state.linkedin = d.linkedin || '';
+    }
+  }catch(e){}
+}
+
+async function postToSheet(payload){
+  const qs = new URLSearchParams(payload).toString();
+  await fetch(`${GAS_ENDPOINT}?${qs}`, { mode: 'no-cors' }); // fire-and-forget GET
+  return true;
+}
+
+function toCalendly(){
+  // switch UI
+  for (let i = firstStep; i <= lastStep; i++){
+    const s = document.getElementById('step'+i);
+    if (s) s.classList.remove('active');
+  }
+  document.getElementById('calendlyStep').classList.add('active');
+
+  // prefill name/email to Calendly
+  const params = new URLSearchParams();
+  if (state.name)  params.set('name', state.name);
+  if (state.email) params.set('email', state.email);
+  const url = CALENDLY_URL + (CALENDLY_URL.includes('?') ? '&' : '?') + params.toString();
+
+  const embed = document.getElementById('calendlyEmbed');
+  embed.setAttribute('data-url', url);
+  if (!document.getElementById('calendly-script')) {
+    const s = document.createElement('script');
+    s.id = 'calendly-script';
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    document.body.appendChild(s);
+  }
+}
+
+async function saveAndBook(){
+  const payload = {
+    sourcePage: window.location.pathname,
+    name: state.name,
+    email: state.email,
+    isNhsJob: state.isNhsJob,
+    whatsapp: state.whatsapp,
+    linkedin: state.linkedin,
+    jobs: state.jobs,
+    locations: state.locations,
+    pkg: state.pkgLabel || 'Skipped'
+  };
+  try { await postToSheet(payload); } catch(_) {}
+  toCalendly();
+}
+
+function skipPackageAndBook(){
+  state.pkgId = 'Skipped';
+  state.pkgLabel = 'Skipped';
+  saveAndBook();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  restoreGatewayData();
+  buildPackages();
+  currentStep = 6; updateProgress();
+});
+</script>
