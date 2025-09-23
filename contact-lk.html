@@ -1,79 +1,132 @@
-<!-- CONTACT FOLLOW-UP (Sri Lanka; steps 6–Calendly) -->
+<!-- CONTACT (Australia) — Airtable upsert, AUD pricing, Calendly inline -->
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- intl-tel-input -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+
+<!-- Calendly -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
 <div class="ds-contact-container">
   <div class="progress-container">
-    <div class="progress-step completed">1</div>
-    <div class="progress-step completed">2</div>
-    <div class="progress-step completed">3</div>
-    <div class="progress-step completed">4</div>
-    <div class="progress-step completed">5</div>
-    <div class="progress-step active" id="p6">6</div>
+    <div class="progress-step active" id="p1">1</div>
+    <div class="progress-step" id="p2">2</div>
+    <div class="progress-step" id="p3">3</div>
+    <div class="progress-step" id="p4">4</div>
+    <div class="progress-step" id="p5">5</div>
+    <div class="progress-step" id="p6">6</div>
     <div class="progress-step" id="p7">7</div>
     <div class="progress-step" id="p8">8</div>
-    <div class="progress-step" id="p9">9</div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
   </div>
 
   <div class="form-container">
-    <!-- STEP 6: Jobs -->
-    <div class="form-step active" id="step6">
+    <!-- STEP 1: Name -->
+    <div class="form-step active" id="step1">
       <div class="form-group">
-        <label><strong>Job(s) you’re looking to apply</strong></label>
-        <textarea id="jobs" rows="3" placeholder="Data Analyst; Business Analyst"></textarea>
+        <label for="name"><strong>Your Name</strong></label>
+        <input type="text" id="name" placeholder="Tharindu Perera">
       </div>
       <div class="btn-container">
         <div></div>
+        <button class="btn-next" onclick="nextStep(1)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Email -->
+    <div class="form-step" id="step2">
+      <div class="form-group">
+        <label for="email"><strong>Your Email</strong></label>
+        <input type="email" id="email" placeholder="tharindu@example.com">
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(2)">Previous</button>
+        <button class="btn-next" onclick="nextStep(2)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: WhatsApp -->
+    <div class="form-step" id="step3">
+      <div class="form-group">
+        <label for="whatsApp"><strong>Your WhatsApp Number</strong></label>
+        <input type="tel" id="whatsApp" class="lg" placeholder="7XXXXXXXX">
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(3)">Previous</button>
+        <button class="btn-next" onclick="nextStep(3)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: LinkedIn (optional) -->
+    <div class="form-step" id="step4">
+      <div class="form-group">
+        <label for="linkedin"><strong>LinkedIn Profile URL <span style="opacity:.8;">(optional)</span></strong></label>
+        <input type="url" id="linkedin" placeholder="https://www.linkedin.com/in/tharindu-perera (optional)">
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(4)">Previous</button>
+        <button class="btn-next" onclick="nextStep(4)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Jobs -->
+    <div class="form-step" id="step5">
+      <div class="form-group">
+        <label><strong>Job(s) you’re looking to apply</strong></label>
+        <textarea id="jobs" rows="3" placeholder="Business Analyst, Accountant, Healthcare Professional"></textarea>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(5)">Previous</button>
+        <button class="btn-next" onclick="nextStep(5)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Locations -->
+    <div class="form-step" id="step6">
+      <div class="form-group">
+        <label><strong>Location(s) you’re targeting</strong></label>
+        <textarea id="locations" rows="2" placeholder="Australia, UK, Colombo, Kandy"></textarea>
+      </div>
+      <div class="btn-container">
+        <button class="btn-prev" onclick="prevStep(6)">Previous</button>
         <button class="btn-next" onclick="nextStep(6)">Next</button>
       </div>
     </div>
 
-    <!-- STEP 7: Locations -->
+    <!-- STEP 7: Package -->
     <div class="form-step" id="step7">
       <div class="form-group">
-        <label><strong>Location(s) you’re targeting</strong></label>
-        <textarea id="locations" rows="2" placeholder="Asutralia; England; Colombo; Kandy"></textarea>
+        <label><strong>Choose a package <span style="opacity:.8;">(optional)</span></strong></label>
+        <div class="nhs-options" id="pkgWrap"></div>
       </div>
       <div class="btn-container">
         <button class="btn-prev" onclick="prevStep(7)">Previous</button>
-        <button class="btn-next" onclick="nextStep(7)">Next</button>
+        <button class="btn-primary" onclick="saveAndBook()">Book a call now</button>
       </div>
     </div>
 
-    <!-- STEP 8: Package (Book a call now here) -->
+    <!-- STEP 8: Calendly -->
     <div class="form-step" id="step8">
-      <div class="form-group">
-        <label><strong>Choose a package</strong></label>
-        <div class="nhs-options" id="pkgWrap"></div>
-        <p class="hint">Or skip for now.</p>
-      </div>
-      <div class="btn-container">
-        <button class="btn-prev" onclick="prevStep(8)">Previous</button>
-        <div style="display:flex; gap:10px;">
-          <button class="btn-next" onclick="skipPackageAndBook()">Skip</button>
-          <button class="btn-primary" onclick="saveAndBook()">Book a call now</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 9: Calendly -->
-    <div class="form-step" id="calendlyStep">
       <div class="form-group">
         <h3 style="color:#fff; margin-bottom:6px; font-weight:700;">Congratulations!</h3>
         <h4 style="color:#ffe8a8; margin-bottom:14px;">It’s time to book your call.</h4>
-        <div id="calendlyEmbed" class="calendly-inline-widget" style="min-width:320px;height:720px;"></div>
+        <div class="calendly-inline-widget"
+             data-url="https://calendly.com/admin-dreamshift/30min"
+             style="min-width:320px;height:700px;"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Styles -->
 <style>
-  .ds-contact-container { background:#24101a; border-radius:15px; width:1000px; max-width:100%; overflow:hidden; margin:0 auto; }
+  .ds-contact-container { background:#24101a; border-radius:15px; width:1000px; max-width:100%; overflow:hidden; margin:0 auto; font-family:'Poppins',sans-serif; }
   .progress-container { display:flex; justify-content:space-between; padding:20px 40px; position:relative; }
-  .progress-step { width:30px; height:30px; border-radius:50%; background:#e0e0e0; display:flex; justify-content:center; align-items:center; font-weight:bold; z-index:2; color:#24101a;}
+  .progress-step { width:30px; height:30px; border-radius:50%; background:#e0e0e0; display:flex; justify-content:center; align-items:center; font-weight:700; z-index:2; color:#24101a; font-family:'Poppins',sans-serif; }
   .progress-step.active { background:#411c30; color:#fff; }
   .progress-step.completed { background:#f6b900; color:#24101a; }
   .progress-bar { position:absolute; height:4px; background:#e0e0e0; top:33px; left:40px; right:40px; z-index:1; }
@@ -86,11 +139,12 @@
 
   .form-group { margin-bottom:30px; text-align:center; }
   .form-group label { display:block; margin-bottom:15px; font-weight:500; color:#fff; font-size:18px; }
-  .form-group input, .form-group textarea { width:100%; padding:15px; border:2px solid #ddd; border-radius:17px; font-size:16px; transition:border .3s ease; text-align:center; max-width:420px; margin:0 auto; display:block; color:#24101a; background:#fff; }
+  .form-group input, .form-group textarea { width:100%; padding:15px; border:2px solid #ddd; border-radius:17px; font-size:16px; transition:border .3s ease; text-align:center; max-width:420px; margin:0 auto; display:block; color:#24101a; background:#fff; font-family:'Poppins',sans-serif; }
   .form-group input:focus, .form-group textarea:focus { border-color:#411c30; outline:none; }
   .hint{ color:#ffe8a8; margin-top:8px; }
 
-  .btn-container { display:flex; justify-content:space-between; margin-top:30px; }
+  .btn-container { display:flex; justify-content:space-between; margin-top:30px; gap:12px; flex-wrap:wrap; }
+  .btn-prev, .btn-next, .btn-primary { font-family:'Poppins',sans-serif; }
   .btn-prev { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; background:#ffe590; color:#411c30; }
   .btn-prev:hover { background:#f6b900; }
   .btn-next { padding:12px 25px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; background:#f6b900; color:#411c30; }
@@ -99,48 +153,120 @@
   .btn-primary:hover { border-color:#411c30; }
 
   .nhs-options { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
-  .pkg-btn { flex:1; text-align:center; padding:15px; border:2px solid #ddd; border-radius:17px; cursor:pointer; transition:all .3s ease; max-width:260px; color:#411c30; background:#fff; }
+  .pkg-btn { flex:1; text-align:center; padding:15px; border:2px solid #ddd; border-radius:17px; cursor:pointer; transition:all .3s ease; max-width:260px; color:#411c30; background:#fff; font-family:'Poppins',sans-serif; }
   .pkg-btn:hover { border-color:#411c30; }
   .pkg-btn.active { border-color:#411c30; background:#f6b900; }
 
-  /* Make placeholders visible & gold */
   .ds-contact-container input::placeholder,
   .ds-contact-container textarea::placeholder { color:#f6b900 !important; opacity:1 !important; }
-  .ds-contact-container input::-webkit-input-placeholder,
-  .ds-contact-container textarea::-webkit-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
-  .ds-contact-container input:-ms-input-placeholder,
-  .ds-contact-container textarea:-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
-  .ds-contact-container input::-ms-input-placeholder,
-  .ds-contact-container textarea::-ms-input-placeholder { color:#f6b900 !important; opacity:1 !important; }
 
-  /* Poppins for package buttons/prices */
-  .pkg-btn, .pkg-price { font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-  .pkg-price { font-weight:700; letter-spacing:0.2px; }
+  .iti { display:block; margin:0 auto; max-width:420px; font-family:'Poppins',sans-serif; }
+  .iti--separate-dial-code .iti__selected-dial-code { font-family:'Poppins',sans-serif; font-weight:600; }
+  .iti input { text-align:left !important; padding-left:86px !important; font-family:'Poppins',sans-serif; }
+
+  @media (max-width:600px){
+    .ds-contact-container{ margin:10px; }
+    .form-container{ padding:20px; }
+    .progress-container{ padding:20px; }
+    .progress-bar{ left:20px; right:20px; }
+    .nhs-options{ flex-direction:column; align-items:center; }
+    .pkg-btn{ width:100%; max-width:260px; }
+  }
 </style>
 
+<!-- libs -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js" defer></script>
+
 <script>
-/* ========= CONFIG ========= */
-const GAS_ENDPOINT = 'https://your-app-script-url';
-const CALENDLY_URL = 'https://calendly.com/your-booking/30min';
-const PACKAGE_PRICES = { essential: 'LKR 35,000', advanced: 'LKR 40,000', ultimate: 'LKR 50,000' };
-/* ========================== */
+/* ===== AIRTABLE CONFIG (exact fields only) ===== */
+const AIRTABLE_API_KEY = 'patKhu6Mk04jcXvAw.87cfbb10e336f1b753651743ee7ca8d9bff68057173264af2437aad9770469ef';
+const AIRTABLE_BASE_ID = 'appUH4eBIBnH4D0fX';
+const AIRTABLE_TABLE   = 'Contact Form Submissions';
 
-const state = {
-  name:'', email:'', isNhsJob:false, whatsapp:'', linkedin:'',
-  jobs:'', locations:'', pkgId:'', pkgLabel:''
-};
+/* ===== PAGE CONFIG ===== */
+const COUNTRY_CODE = 'AU'; // namespace for session key
+const PACKAGE_PRICES = { essential: 'LKR 35,000', advanced: 'LKR 40,000', ultimate: 'LKR 60,000' };
 
-const firstStep = 6, lastStep = 9;
-let currentStep = 6;
+/* ===== STATE ===== */
+const state = { name:'', email:'', whatsapp:'', linkedin:'', jobs:'', locations:'', pkgId:'', pkgLabel:'' };
+const firstStep = 1, lastStep = 8;
+let currentStep = 1;
 
+/* ---- Session + Record cache ---- */
+function getSessionId() {
+  const KEY = `ds_session_${COUNTRY_CODE}`;
+  let id = sessionStorage.getItem(KEY);
+  if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random())); sessionStorage.setItem(KEY, id); }
+  return id;
+}
+const REC_KEY = `ds_airtable_rec_${COUNTRY_CODE}`;
+function getCachedRecordId(){ return sessionStorage.getItem(REC_KEY) || null; }
+function setCachedRecordId(id){ sessionStorage.setItem(REC_KEY, id); }
+
+/* ---- Airtable helpers ---- */
+function atHeaders(){ return {'Authorization':`Bearer ${AIRTABLE_API_KEY}`,'Content-Type':'application/json','Accept':'application/json'}; }
+function atBaseUrl(){ return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}`; }
+
+async function findRecordBySession(){
+  const sessionId = getSessionId();
+  const formula = encodeURIComponent(`{SessionId} = "${sessionId}"`);
+  const res = await fetch(`${atBaseUrl()}?maxRecords=1&filterByFormula=${formula}`, { headers: atHeaders() });
+  if (!res.ok){ return null; }
+  const data = await res.json();
+  return (data.records && data.records[0]) ? data.records[0] : null;
+}
+
+async function ensureRecord(){
+  const cached = getCachedRecordId();
+  if (cached) return cached;
+
+  // Try to find
+  const existing = await findRecordBySession();
+  if (existing){ setCachedRecordId(existing.id); return existing.id; }
+
+  // Create initial (no Country, no CreatedAt, no Step)
+  const payload = {
+    fields: {
+      SessionId: getSessionId(),
+      SourcePage: location.pathname || '/contact-au',
+      Status: 'partial',
+      UpdatedAt: new Date().toISOString()
+    }
+  };
+  const res = await fetch(atBaseUrl(), { method:'POST', headers: atHeaders(), body: JSON.stringify(payload) });
+  const txt = await res.text();
+  if (!res.ok){ console.error('Airtable create error', res.status, txt); return null; }
+  const data = JSON.parse(txt || '{}');
+  const recId = data.id || (data.records && data.records[0] && data.records[0].id);
+  if (recId) setCachedRecordId(recId);
+  return recId;
+}
+
+async function patchRecord(fields){
+  const recId = await ensureRecord();
+  if (!recId) return false;
+  const merged = Object.assign({}, fields, { UpdatedAt: new Date().toISOString() });
+  const res = await fetch(`${atBaseUrl()}/${recId}`, {
+    method:'PATCH', headers: atHeaders(), body: JSON.stringify({ fields: merged })
+  });
+  if (!res.ok){
+    const t = await res.text(); console.error('Airtable patch error', res.status, t);
+    return false;
+  }
+  return true;
+}
+
+/* ---- UI helpers ---- */
 function updateProgress(){
-  document.getElementById('progress-fill').style.width = ((currentStep - 1) / 9) * 100 + '%';
-  for (let i = 6; i <= 9; i++){
+  const pct = ((currentStep - 1) / (lastStep - 1)) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  for (let i = firstStep; i <= lastStep; i++){
     const el = document.getElementById('p'+i);
     if (!el) continue;
-    el.classList.remove('active');
+    el.classList.remove('active','completed');
     if (i < currentStep) el.classList.add('completed');
-    if (i === currentStep){ el.classList.add('active'); el.classList.remove('completed'); }
+    if (i === currentStep) el.classList.add('active');
   }
 }
 function showStep(n){
@@ -150,105 +276,87 @@ function showStep(n){
   }
   currentStep = n; updateProgress();
 }
-function nextStep(step){
-  if (step === 6){ state.jobs = (document.getElementById('jobs').value || '').trim(); }
-  if (step === 7){ state.locations = (document.getElementById('locations').value || '').trim(); }
-  showStep(Math.min(step + 1, lastStep));
-}
-function prevStep(step){ showStep(Math.max(step - 1, firstStep)); }
 
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-function buildPackages(){
-  const wrap = document.getElementById('pkgWrap');
-  wrap.innerHTML = '';
-  [
-    { id:'essential', label:'Essential Package', price: PACKAGE_PRICES.essential },
-    { id:'advanced',  label:'Advanced Package',  price: PACKAGE_PRICES.advanced  },
-    { id:'ultimate',  label:'Ultimate Career Package', price: PACKAGE_PRICES.ultimate }
-  ].forEach(p=>{
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'pkg-btn';
-    btn.innerHTML = `<span class="pkg-label">${escapeHtml(p.label)}</span> — <span class="pkg-price">${escapeHtml(p.price)}</span>`;
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      state.pkgId = p.id;
-      state.pkgLabel = `${p.label} — ${p.price}`;
-    });
-    wrap.appendChild(btn);
+/* ---- Phone ---- */
+let iti = null;
+function initPhone(){
+  const input = document.getElementById('whatsApp');
+  if (!input) return;
+  iti = window.intlTelInput(input, {
+    initialCountry: 'lk',
+    preferredCountries: ['au','gb','us','lk'],
+    separateDialCode: true,
+    nationalMode: true,
+    utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js'
   });
 }
 
-function restoreGatewayData(){
-  try{
-    const raw = sessionStorage.getItem('ds_prefill');
-    if (raw){
-      const d = JSON.parse(raw);
-      state.name = d.name || '';
-      state.email = d.email || '';
-      state.isNhsJob = !!d.isNhsJob;
-      state.whatsapp = d.whatsapp || '';
-      state.linkedin = d.linkedin || '';
-    }
-  }catch(e){}
+/* ---- Flow ---- */
+async function nextStep(step){
+  if (step === 1){
+    const v = document.getElementById('name').value.trim(); if (!v){ alert('Please enter your name'); return; }
+    state.name = v;
+    await patchRecord({ Name: state.name, Status:'partial' });
+  }
+  if (step === 2){
+    const v = document.getElementById('email').value.trim(); if (!v){ alert('Please enter your email'); return; }
+    state.email = v;
+    await patchRecord({ Email: state.email, Status:'partial' });
+  }
+  if (step === 3){
+    if (!iti || !iti.isValidNumber()){ alert('Please enter a valid WhatsApp number'); return; }
+    state.whatsapp = iti.getNumber();
+    await patchRecord({ WhatsApp: state.whatsapp, Status:'partial' });
+  }
+  if (step === 4){
+    state.linkedin = (document.getElementById('linkedin').value || '').trim();
+    await patchRecord({ LinkedIn: state.linkedin, Status:'partial' });
+  }
+  if (step === 5){
+    state.jobs = (document.getElementById('jobs').value || '').trim();
+    await patchRecord({ Jobs: state.jobs, Status:'partial' });
+  }
+  if (step === 6){
+    state.locations = (document.getElementById('locations').value || '').trim();
+    await patchRecord({ Locations: state.locations, Status:'partial' });
+  }
+  showStep(Math.min(step + 1, lastStep));
 }
 
-async function postToSheet(payload){
-  const qs = new URLSearchParams(payload).toString();
-  await fetch(`${GAS_ENDPOINT}?${qs}`, { mode: 'no-cors' }); // fire-and-forget GET
-  return true;
+function prevStep(step){ showStep(Math.max(step - 1, firstStep)); }
+
+function pkgSelect(id,label){
+  state.pkgId = id; state.pkgLabel = label;
+  document.querySelectorAll('.pkg-btn').forEach(b => b.classList.remove('active'));
+  const el = document.querySelector(`[data-pkg="${id}"]`); if (el) el.classList.add('active');
 }
 
-function toCalendly(){
-  // switch UI
-  for (let i = firstStep; i <= lastStep; i++){
-    const s = document.getElementById('step'+i);
-    if (s) s.classList.remove('active');
-  }
-  document.getElementById('calendlyStep').classList.add('active');
-
-  // prefill name/email to Calendly
-  const params = new URLSearchParams();
-  if (state.name)  params.set('name', state.name);
-  if (state.email) params.set('email', state.email);
-  const url = CALENDLY_URL + (CALENDLY_URL.includes('?') ? '&' : '?') + params.toString();
-
-  const embed = document.getElementById('calendlyEmbed');
-  embed.setAttribute('data-url', url);
-  if (!document.getElementById('calendly-script')) {
-    const s = document.createElement('script');
-    s.id = 'calendly-script';
-    s.src = 'https://assets.calendly.com/assets/external/widget.js';
-    document.body.appendChild(s);
-  }
+function buildPackages(){
+  const wrap = document.getElementById('pkgWrap');
+  wrap.innerHTML = `
+    <button class="pkg-btn" data-pkg="essential" onclick="pkgSelect('essential','Essential')">
+      <div class="pkg-title"><strong>Essential</strong></div>
+      <div class="pkg-price">${PACKAGE_PRICES.essential}</div>
+    </button>
+    <button class="pkg-btn" data-pkg="advanced" onclick="pkgSelect('advanced','Advanced')">
+      <div class="pkg-title"><strong>Advanced</strong></div>
+      <div class="pkg-price">${PACKAGE_PRICES.advanced}</div>
+    </button>
+    <button class="pkg-btn" data-pkg="ultimate" onclick="pkgSelect('ultimate','Ultimate')">
+      <div class="pkg-title"><strong>Ultimate</strong></div>
+      <div class="pkg-price">${PACKAGE_PRICES.ultimate}</div>
+    </button>
+  `;
 }
 
 async function saveAndBook(){
-  const payload = {
-    sourcePage: window.location.pathname,
-    name: state.name,
-    email: state.email,
-    isNhsJob: state.isNhsJob,
-    whatsapp: state.whatsapp,
-    linkedin: state.linkedin,
-    jobs: state.jobs,
-    locations: state.locations,
-    pkg: state.pkgLabel || 'Skipped'
-  };
-  try { await postToSheet(payload); } catch(_) {}
-  toCalendly();
+  // final patch with package + status, then show Calendly
+  await patchRecord({ Package: (state.pkgLabel || 'Skipped'), Status:'final' });
+  showStep(8);
 }
 
-function skipPackageAndBook(){
-  state.pkgId = 'Skipped';
-  state.pkgLabel = 'Skipped';
-  saveAndBook();
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  restoreGatewayData();
-  buildPackages();
-  currentStep = 6; updateProgress();
+/* ---- Init ---- */
+document.addEventListener('DOMContentLoaded', () => {
+  initPhone(); buildPackages(); updateProgress();
 });
 </script>

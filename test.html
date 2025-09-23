@@ -1,0 +1,132 @@
+<script>
+/* ========= AIRTABLE CONFIG (client-side; use only if acceptable) ========= */
+const AIRTABLE_API_KEY = 'patKhu6Mk04jcXvAw.87cfbb10e336f1b753651743ee7ca8d9bff68057173264af2437aad9770469ef';
+const AIRTABLE_BASE_ID = 'appUH4eBIBnH4D0fX';
+const AIRTABLE_TABLE   = 'Contact Form Submissions';
+
+/* Identify which page is sending data (set this per page) */
+const SOURCE_PAGE = location.pathname || '/contact';
+
+/* Namespace for session storage (set per region/page if you have multiple) */
+const SESSION_NAMESPACE = 'AU'; // e.g. 'LK' on LK page
+/* ======================================================================= */
+
+/* ---- Session helpers ---- */
+function _sidKey(){ return `ds_session_${SESSION_NAMESPACE}`; }
+function _recKey(){ return `ds_airtable_rec_${SESSION_NAMESPACE}`; }
+
+function getSessionId(){
+  let id = sessionStorage.getItem(_sidKey());
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random()));
+    sessionStorage.setItem(_sidKey(), id);
+  }
+  return id;
+}
+function cacheRecordId(id){ sessionStorage.setItem(_recKey(), id); }
+function getCachedRecordId(){ return sessionStorage.getItem(_recKey()); }
+
+/* ---- Airtable low-level ---- */
+function atHeaders(){ return { 'Authorization': `Bearer ${AIRTABLE_API_KEY}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }; }
+function atBaseUrl(){ return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}`; }
+
+async function atReq(method, url, body){
+  const res = await fetch(url, { method, headers: atHeaders(), body: body ? JSON.stringify(body) : undefined });
+  const txt = await res.text();
+  if (!res.ok) {
+    console.error(`[Airtable] ${method} ${res.status} ${res.statusText}`, txt);
+    throw new Error(`${method} ${res.status}: ${txt}`);
+  }
+  return txt ? JSON.parse(txt) : {};
+}
+
+/* ---- Find/Create/Upsert by SessionId ---- */
+async function findBySessionId(){
+  const sid = getSessionId();
+  const formula = encodeURIComponent(`{SessionId} = "${sid}"`);
+  const data = await atReq('GET', `${atBaseUrl()}?maxRecords=1&filterByFormula=${formula}`);
+  return (data.records && data.records[0]) ? data.records[0] : null;
+}
+
+async function ensureRecord(){
+  // Use cached record id if available
+  const cached = getCachedRecordId();
+  if (cached) return cached;
+
+  // Try to find an existing row with this SessionId
+  const found = await findBySessionId();
+  if (found && found.id){ cacheRecordId(found.id); return found.id; }
+
+  // Create a minimal row so we can patch as the user progresses
+  const createFields = {
+    SessionId: getSessionId(),
+    SourcePage: SOURCE_PAGE,
+    Status: 'partial',
+    UpdatedAt: new Date().toISOString()
+  };
+  const created = await atReq('POST', atBaseUrl(), { fields: createFields });
+  cacheRecordId(created.id);
+  return created.id;
+}
+
+/**
+ * Patch only the fields you pass (non-destructive).
+ * Example usage after each step:
+ *   await upsertAirtable({ Name: 'Jane Doe' });
+ *   await upsertAirtable({ Email: 'jane@x.com' });
+ *   await upsertAirtable({ WhatsApp: '+61...' });
+ */
+async function upsertAirtable(partialFields){
+  const id = await ensureRecord();
+  const fields = Object.assign({}, partialFields, { UpdatedAt: new Date().toISOString() });
+  return atReq('PATCH', `${atBaseUrl()}/${id}`, { fields });
+}
+
+/* ---- Example: wire these to your step transitions ---- */
+/* Step 1: Name */
+async function saveStep1(){
+  const name = document.getElementById('name').value.trim();
+  if (!name) { alert('Please enter your name'); return; }
+  await upsertAirtable({ Name: name, Status: 'partial' });
+}
+
+/* Step 2: Email */
+async function saveStep2(){
+  const email = document.getElementById('email').value.trim();
+  if (!email) { alert('Please enter your email'); return; }
+  await upsertAirtable({ Email: email, Status: 'partial' });
+}
+
+/* Step 3: WhatsApp (assuming intl-tel-input) */
+async function saveStep3(itiInstance){
+  if (!itiInstance || !itiInstance.isValidNumber()){ alert('Please enter a valid WhatsApp number'); return; }
+  await upsertAirtable({ WhatsApp: itiInstance.getNumber(), Status: 'partial' });
+}
+
+/* Step 4: LinkedIn (optional) */
+async function saveStep4(){
+  const linkedin = (document.getElementById('linkedin').value || '').trim();
+  if (linkedin) await upsertAirtable({ LinkedIn: linkedin, Status: 'partial' });
+}
+
+/* Step 5: Jobs */
+async function saveStep5(){
+  await upsertAirtable({ Jobs: (document.getElementById('jobs').value || '').trim(), Status: 'partial' });
+}
+
+/* Step 6: Locations */
+async function saveStep6(){
+  await upsertAirtable({ Locations: (document.getElementById('locations').value || '').trim(), Status: 'partial' });
+}
+
+/* Step 7: Package select (optional) */
+async function saveStep7(selectedLabel){
+  await upsertAirtable({ Package: selectedLabel || '', Status: 'partial' });
+}
+
+/* Finalize before Calendly (optional) */
+async function finalizeSubmission(){
+  await upsertAirtable({ Status: 'final' });
+  // then show Calendly / next screen
+}
+</script>
