@@ -10,10 +10,6 @@ _Serverless, multi-step client onboarding forms for Dreamshift—gateway + follo
 [![Animations](https://img.shields.io/badge/Animations-Lottie-f6b900)](#)
 [![License](https://img.shields.io/badge/License-MIT-black)](#)
 
-> **Repo name (suggested):** `dreamshift-careers-intake`  
-> **License:** MIT  
-> **Description:** Multi-step client intake flow that routes by country, captures lead details, saves to Google Sheets, and hands off to Calendly for booking.
-
 ---
 
 ## Live URL
