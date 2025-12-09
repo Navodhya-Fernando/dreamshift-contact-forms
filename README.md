@@ -44,24 +44,24 @@ Data is synced to **Airtable** in two stages ("Partial" on input, "Final" on com
 ```mermaid
 graph TD
     A[User Visits Page] --> B[Multi-Step Form]
-    B -- Input Data --> C{Airtable (Partial)}
-    B -- Step 1-4 --> D[Package Selection]
-    D -- "Select Package" --> E[Calendly Embed]
-    E --> F[Airtable (Final: Booked)]
-    D -- "Can't Afford" --> G[Lead Magnet Table]
+    B -->|Input Data| C[Airtable - Partial]
+    B -->|Steps 1-4| D[Package Selection]
+    D -->|Select Package| E[Calendly Embed]
+    E --> F[Airtable - Final (Booked)]
+    D -->|Can't Afford| G[Lead Magnet Table]
     G --> H[Secure Custom Popup]
 ```
 
 **Libraries:**
 
-  - intl-tel-input: Phone formatting.
-  - Calendly Widget: Embedded booking.
+  - [intl-tel-input](https://github.com/jackocnr/intl-tel-input): Phone formatting.
+  - [Calendly Widget](https://calendly.com): Embedded booking.
 
 -----
 
 ## Project Structure
 
-```
+```text
 /
 ├── contact-au.html        # 5-Step Form (Location removed), AUD pricing
 ├── contact-uk.html        # 5-Step Form (Location removed), GBP pricing
@@ -110,21 +110,21 @@ To prevent the popup from showing immediately upon page load, we use strict inli
 
 ## Installation Guide
 
-1. **WordPress / Elementor:**
+1.  **WordPress / Elementor:**
       * Drag an **HTML Widget** onto your page.
       * Copy the full code from the specific region file (e.g., `contact-uk.html`).
       * Paste into the widget.
-2. **Clear Cache:**
+2.  **Clear Cache:**
       * If updating from a previous version, **purge your site cache** (WP Rocket/Cloudflare) and browser cache. The new ID `ds-secure-popup` is designed to break old cache chains.
 
 -----
 
 ## Troubleshooting
 
-* **Popup shows on load?**
+  * **Popup shows on load?**
       * Ensure the HTML div has `style="display:none;"` inline.
       * Ensure the ID is `ds-secure-popup`.
-* **Phone flag wrong?**
+  * **Phone flag wrong?**
       * Check the `initialCountry` setting in the `initPhone()` function (e.g., `'gb'`, `'au'`, `'lk'`).
-* **Airtable error?**
+  * **Airtable error?**
       * Check the browser console (`F12`). If you see `401 Unauthorized`, generate a new Airtable Token.
