@@ -1,6 +1,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
@@ -101,7 +102,26 @@
   </div>
 </div>
 
+<div id="ds-secure-popup" class="dreamshift-popup-container" style="display:none;">
+  <div class="dreamshift-popup-content">
+    <span class="dreamshift-close-btn">&times;</span>
+    
+    <h2 class="dreamshift-title">Don't Worry!</h2>
+    <p class="dreamshift-subtitle">Here is a Free Gift for you!</p>
+    
+    <div class="dreamshift-image">
+      <img src="https://dreamshift.net/wp-content/uploads/2025/09/Australian-Job-Search-Toolkit-We-analysed-100-Successful-Job-Seekers-in-Australia-and-turned-it-into-a-step-by-step-guide.jpg" 
+           alt="Job Search Toolkit">
+    </div>
+    
+    <div class="dreamshift-cta">
+      <a href="https://dreamshift.net/australia" class="dreamshift-button">Get Your Free Gift</a>
+    </div>
+  </div>
+</div>
+
 <style>
+  /* --- MAIN FORM CSS --- */
   .ds-contact-container { background:#24101a; border-radius:15px; width:1000px; max-width:100%; overflow:hidden; margin:0 auto; font-family:'Poppins',sans-serif; }
   .progress-container { display:flex; justify-content:space-between; padding:20px 40px; position:relative; }
   .progress-step { width:30px; height:30px; border-radius:50%; background:#e0e0e0; display:flex; justify-content:center; align-items:center; font-weight:700; z-index:2; color:#24101a; font-family:'Poppins',sans-serif; }
@@ -136,8 +156,18 @@
   .btn-primary { width:100%; max-width:260px; padding:15px 25px; border:none; border-radius:8px; font-size:18px; font-weight:700; cursor:pointer; background:#f6b900; color:#411c30; box-shadow: 0 4px 15px rgba(246, 185, 0, 0.3); }
   .btn-primary:hover { background:#ffe590; transform:translateY(-2px); transition:all 0.2s; }
 
-  .btn-low-budget { width:100%; max-width:500px; margin:0 auto; padding:15px; border:1px solid rgba(255,255,255,0.3); border-radius:8px; font-size:14px; cursor:pointer; background:rgba(255,255,255,0.05); color:#ddd; display:block; transition:all 0.3s; }
-  .btn-low-budget:hover { background:rgba(255,255,255,0.15); color:#fff; border-color:#fff; }
+  /* LOW BUDGET BUTTON with White Border */
+  .btn-low-budget { 
+      width:100%; max-width:500px; margin:0 auto; padding:15px; 
+      border: 2px solid #ffffff; border-radius:8px; 
+      font-size:14px; font-weight: 600; cursor:pointer; 
+      background:rgba(255,255,255,0.05); color:#fff; 
+      display:block; transition:all 0.3s; 
+  }
+  .btn-low-budget:hover { 
+      background:rgba(255,255,255,0.25); color:#fff; 
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  }
 
   .nhs-options { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
   .pkg-btn { flex:1; text-align:center; padding:15px; border:2px solid #ddd; border-radius:17px; cursor:pointer; transition:all .3s ease; max-width:260px; color:#411c30; background:#fff; font-family:'Poppins',sans-serif; }
@@ -159,6 +189,50 @@
     .nhs-options{ flex-direction:column; align-items:center; }
     .pkg-btn{ width:100%; max-width:260px; }
   }
+
+  /* --- POPUP CSS --- */
+  #ds-secure-popup {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    /* display:none handled inline to prevent FOUC */
+    justify-content: center; align-items: center;
+    z-index: 9999999;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  /* FORCE visible when active */
+  #ds-secure-popup.active { 
+    display: flex !important; 
+    animation: fadeInPopup 0.3s ease-out; 
+  }
+  
+  @keyframes fadeInPopup { from{opacity:0;} to{opacity:1;} }
+
+  .dreamshift-popup-content {
+    background: white; padding: 40px 30px; border-radius: 12px;
+    max-width: 450px; width: 90%; text-align: center;
+    position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .dreamshift-close-btn {
+    position: absolute; top: 15px; right: 20px;
+    font-size: 24px; font-weight: bold; color: #333;
+    cursor: pointer; background: none; border: none; line-height: 1;
+  }
+
+  .dreamshift-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 10px 0; line-height: 1.2; }
+  .dreamshift-subtitle { font-size: 16px; color: #666; margin: 0 0 25px 0; line-height: 1.4; }
+  
+  .dreamshift-image { margin: 0 0 25px 0; }
+  .dreamshift-image img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+  .dreamshift-button {
+    background: #f6b900; color: #24101a; padding: 14px 28px;
+    border-radius: 8px; text-decoration: none; font-weight: 600;
+    font-size: 16px; display: inline-block; transition: all 0.3s ease;
+    border: none; cursor: pointer;
+  }
+  .dreamshift-button:hover { background: #e5ab00; transform: translateY(-2px); }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js" defer></script>
@@ -172,13 +246,12 @@ const TABLE_MAIN       = 'Contact Form Submissions';
 const TABLE_LEAD       = 'Lead Magnet Form';
 
 /* ===== PAGE CONFIG ===== */
-const COUNTRY_CODE = 'AU'; 
+const COUNTRY_CODE = 'US'; // General/US code
 const PACKAGE_PRICES = { essential: '$225', advanced: '$250', ultimate: '$400' };
-const URL_DREAMSHIFT = 'https://dreamshift.net/australia';
 
 /* ===== STATE ===== */
 const state = { name:'', jobs:'', locations:'', whatsapp:'', pkgId:'', pkgLabel:'' };
-const firstStep = 1, lastStep = 6; 
+const firstStep = 1, lastStep = 6; // Preserved 6 steps
 let currentStep = 1;
 
 /* ---- Session + Record cache ---- */
@@ -205,23 +278,14 @@ async function findRecordBySession(){
   return (data.records && data.records[0]) ? data.records[0] : null;
 }
 
-// Ensure record exists in MAIN table (for partial data)
+// Ensure record exists in MAIN table
 async function ensureRecord(){
   const cached = getCachedRecordId();
   if (cached) return cached;
-
-  // Try to find
   const existing = await findRecordBySession();
   if (existing){ setCachedRecordId(existing.id); return existing.id; }
-
-  // Create initial
   const payload = {
-    fields: {
-      SessionId: getSessionId(),
-      SourcePage: location.pathname || '/contact-us',
-      Status: 'partial',
-      UpdatedAt: new Date().toISOString()
-    }
+    fields: { SessionId: getSessionId(), SourcePage: location.pathname || '/contact-us', Status: 'partial', UpdatedAt: new Date().toISOString() }
   };
   const res = await fetch(atUrl(TABLE_MAIN), { method:'POST', headers: atHeaders(), body: JSON.stringify(payload) });
   if (!res.ok) return null;
@@ -241,7 +305,7 @@ async function patchRecord(fields){
   });
 }
 
-// Submit to LEAD MAGNET table (New Record)
+// Submit to LEAD MAGNET table
 async function submitToLeadMagnet(){
     const payload = {
         fields: {
@@ -308,10 +372,10 @@ async function nextStep(step){
     await patchRecord({ Jobs: state.jobs, Status:'partial' });
   }
 
-  // Step 3: Locations
+  // Step 3: Locations (PRESERVED)
   if (step === 3){
     state.locations = (document.getElementById('locations').value || '').trim();
-    if (!state.locations) { alert('Please enter locations or click Skip'); return; }
+    if (!state.locations) { alert('Please enter locations'); return; }
     await patchRecord({ Locations: state.locations, Status:'partial' });
   }
 
@@ -323,13 +387,6 @@ async function nextStep(step){
   }
 
   showStep(Math.min(step + 1, lastStep));
-}
-
-async function skipLocation(){
-    state.locations = "Skipped";
-    document.getElementById('locations').value = "";
-    await patchRecord({ Locations: "Skipped", Status:'partial' });
-    showStep(4);
 }
 
 function prevStep(step){ showStep(Math.max(step - 1, firstStep)); }
@@ -380,21 +437,52 @@ async function processPaidFlow(){
     showStep(6);
 }
 
-// FLOW B: Low Budget -> Lead Magnet Table -> Website Redirect
+// FLOW B: Low Budget -> Lead Magnet Table -> Custom Popup
 async function processLowBudgetFlow(){
     const btn = document.querySelector('.btn-low-budget');
+    const originalText = btn.innerHTML;
     btn.innerHTML = 'Processing...';
     btn.disabled = true;
 
-    // Create entry in Lead Magnet Table
-    await submitToLeadMagnet();
+    // 1. Submit to Airtable
+    try { await submitToLeadMagnet(); } catch(e) { console.error("Airtable Error", e); }
 
-    // Redirect
-    window.location.href = URL_DREAMSHIFT;
+    // 2. Open Custom Popup (Triggered via click ONLY)
+    // NOTE: Using the SECURE ID 'ds-secure-popup'
+    const popup = document.getElementById('ds-secure-popup');
+    if(popup) {
+        popup.classList.add('active');
+    } else {
+        console.error("Popup ID not found");
+    }
+
+    // Reset button
+    btn.innerHTML = originalText;
+    btn.disabled = false;
 }
 
-/* ---- Init ---- */
+// Popup Logic (Listeners only)
 document.addEventListener('DOMContentLoaded', () => {
   initPhone(); buildPackages(); updateProgress();
+
+  const popup = document.getElementById('ds-secure-popup');
+  
+  if(popup) {
+      const closeBtn = popup.querySelector('.dreamshift-close-btn');
+
+      // Close functionality
+      if(closeBtn) {
+          closeBtn.addEventListener('click', function() {
+            popup.classList.remove('active');
+          });
+      }
+
+      // Close when clicking outside
+      popup.addEventListener('click', function(e) {
+        if (e.target === popup) {
+          popup.classList.remove('active');
+        }
+      });
+  }
 });
 </script>
