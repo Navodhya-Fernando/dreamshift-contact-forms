@@ -1,13 +1,12 @@
-# Dreamshift Contact Forms 🎯
+# Dreamshift Contact Forms (Airtable Edition) 🎯
 
-_Serverless, multi-step client onboarding forms for Dreamshift—gateway + follow-up flow with WhatsApp flag picker, geo routing, Calendly handoff, and Google Sheets logging._
+_Region-specific, multi-step onboarding forms for Dreamshift. Features real-time Airtable logging, Calendly integration, and a "Low Budget" capture flow with a custom secure popup._
 
 [![Platform](https://img.shields.io/badge/Platform-WordPress%20%2B%20Elementor-7a5)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-blue)](#)
-[![Data](https://img.shields.io/badge/Data-Google%20Sheets-34a853)](#)
+[![Data](https://img.shields.io/badge/Data-Airtable-yellow)](#)
 [![Booking](https://img.shields.io/badge/Booking-Calendly-00a2ff)](#)
 [![Phone%20UX](https://img.shields.io/badge/Phone-intl--tel--input-444)](#)
-[![Animations](https://img.shields.io/badge/Animations-Lottie-f6b900)](#)
 [![License](https://img.shields.io/badge/License-MIT-black)](#)
 
 ---
@@ -18,137 +17,114 @@ _Serverless, multi-step client onboarding forms for Dreamshift—gateway + follo
 ---
 
 ## Overview
-This project improves the **UX for Dreamshift clients** by splitting the flow into:  
-1) a **Gateway** (Steps 1–5: Name → Email → WhatsApp (with flag) → LinkedIn (optional) → NHS?), then  
-2) a **Country page** (e.g., **contact-lk**, Steps 6–9: Jobs → Locations → Package (+ “Book a call now”) → **Calendly**).
+This project replaces the old Gateway flow with **standalone, region-optimized forms**. 
+Data is synced to **Airtable** in two stages ("Partial" on input, "Final" on completion).
 
-Highlights:
-- **WhatsApp with flags** via `intl-tel-input` and **auto country** from IP.
-- **Geo-based redirect** (LK/UK/US/AU) using IP, with NHS override.
-- **Lottie** “finding the best packages…” animation between flows.
-- **Google Sheets** logging via **Apps Script** (GET/POST).
-- **Calendly** embed with name/email prefill.
+**Key Features:**
+* **Airtable Integration:** Direct API connection (No Apps Script required).
+* **Smart "Low Budget" Logic:** Users who cannot afford the package are captured as leads and shown a **Free Gift Popup** instead of the calendar.
+* **"Nuclear" Popup Fix:** Custom HTML/CSS popup implementation that strictly prevents "Flash of Unstyled Content" (FOUC) or auto-loading glitches.
+* **Region Specifics:** Custom currency symbols, phone masks, and step counts per region.
 
 ---
 
-## Screenshots
+## Variations & Logic
 
-_All images live under `/Demo`. They render on GitHub if this folder exists at the repo root._
-
-### Gateway (Steps 1–5)
-| Step | Screenshot |
-|---|---|
-| 1 — Name | ![Name](Demo/Name.png) |
-| 2 — Email | ![Email](Demo/Email.png) |
-| 3 — Phone (WhatsApp with flag) | ![Phone Number](Demo/Phone-Number.png) |
-| 4 — LinkedIn (optional) | ![LinkedIn](Demo/LinkedIn.png) |
-| 5 — NHS | ![NHS Jobs](Demo/NhsJobs.png) |
-| Redirecting (Lottie) | ![Redirecting](Demo/Redirecting.png) |
-
-### Country Page (Steps 6–9)
-| Step | Screenshot |
-|---|---|
-| 6 — Jobs applying | ![Jobs Applying](Demo/Jobs-Applying.png) |
-| 7 — Locations | ![Locations](Demo/Locations.png) |
-| 8 — Packages | ![Packages](Demo/Packages.png) |
-| 8 — Package Selected | ![Package Selected](Demo/Package-Selected.png) |
-| 9 — Calendly | ![Calendly](Demo/Calendly.png) |
+| Region | Code | Steps | Currency | Popup Logic |
+| :--- | :--- | :--- | :--- | :--- |
+| **Australia** | `AU` | 5 | AUD ($) | **Step 3 (Location) Removed**. Low Budget = Popup. |
+| **United Kingdom** | `UK` | 5 | GBP (£) | **Step 3 (Location) Removed**. Low Budget = Popup. |
+| **Sri Lanka** | `LK` | 6 | LKR (Rs) | Includes Location Step. Low Budget = Popup. |
+| **USA / General** | `US` | 6 | USD ($) | Includes Location Step. Low Budget = Popup. |
 
 ---
 
 ## Architecture
 
-```
-Browser (WordPress + Elementor: Gateway & Country pages)
-  ├─ IP lookup (ipapi) → sets:
-  │   • WhatsApp flag (intl-tel-input)
-  │   • Redirect to LK/UK/US/AU (NHS overrides)
-  ├─ Lottie animation during handoff
-  ├─ Calendly embed with name/email prefill
-  └─ Google Apps Script (Web App) ⇢ Google Sheets (append row)
+```mermaid
+graph TD
+    A[User Visits Page] --> B[Multi-Step Form]
+    B -- Input Data --> C{Airtable (Partial)}
+    B -- Step 1-4 --> D[Package Selection]
+    D -- "Select Package" --> E[Calendly Embed]
+    E --> F[Airtable (Final: Booked)]
+    D -- "Can't Afford" --> G[Lead Magnet Table]
+    G --> H[Secure Custom Popup]
 ```
 
-**Libraries**
-- [intl-tel-input](https://github.com/jackocnr/intl-tel-input) for country flags & number formatting/validation  
-- [Lottie Player](https://lottiefiles.github.io/lottie-player/) for animations  
-- [Calendly inline widget](https://help.calendly.com/hc/en-us/articles/226767207-Embed-options-overview) for scheduling
+**Libraries:**
 
----
+  - intl-tel-input: Phone formatting.
+  - Calendly Widget: Embedded booking.
+
+-----
 
 ## Project Structure
 
 ```
-/Demo
-  Calendly.png
-  Email.png
-  Jobs-Applying.png
-  LinkedIn.png
-  Locations.png
-  Name.png
-  NhsJobs.png
-  Package-Selected.png
-  Packages.png
-  Phone-Number.png
-  Redirecting.png
-app-script.gs              # Google Apps Script (Web App) → appends rows to Google Sheet
-contact-gateway.html       # Steps 1–5 (Name, Email, WhatsApp w/ flags, LinkedIn optional, NHS?) + Lottie handoff
-contact-lk.html            # Steps 6–9 for Sri Lanka (Jobs, Locations, Package, Calendly)
-contact-uk.html            # Steps 6–9 for UK
-contact-us.html            # Steps 6–9 for US
-contact-au.html            # Steps 6–9 for AU
-contact-nhs.html           # NHS-specific follow-up page (optional)
-README.md
+/
+├── contact-au.html        # 5-Step Form (Location removed), AUD pricing
+├── contact-uk.html        # 5-Step Form (Location removed), GBP pricing
+├── contact-lk.html        # 6-Step Form (Location kept), LKR pricing
+├── contact-us.html        # 6-Step Form (Location kept), USD pricing
+└── README.md
 ```
 
----
+-----
 
-## Quickstart
+## Configuration
 
-1. **WordPress / Elementor**
-   - Add an HTML widget to the target pages.
-   - Paste **`contact-gateway.html`** into the gateway page.
-   - Paste **`contact-*.html`** into each country page (LK/UK/US/AU).
+To deploy these forms, edit the `<script>` section at the top of each HTML file.
 
-2. **Google Sheets (Apps Script)**
-   - Create a Google Sheet with columns:  
-     `Timestamp | SourcePage | Name | Email | NHSJob | WhatsApp | LinkedIn | Jobs | Locations | Package`
-   - Apps Script → Deploy as **Web app** (`Execute as: Me`, `Anyone`).  
-   - Copy the **Web App URL**.
+### 1. Airtable Keys
 
-3. **Wire the endpoint**
-   - In each country page HTML, set:
-     ```js
-     const GAS_ENDPOINT = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
-     ```
-   - Save; test the flow end-to-end.
-   
-4. **Calendly**
-   - Set `CALENDLY_URL` in each country page file for prefill.
+You need a Personal Access Token with `data.records:write` permissions.
 
----
+```javascript
+const AIRTABLE_API_KEY = 'pat...'; // Your Token
+const AIRTABLE_BASE_ID = 'app...'; // Base ID
+const TABLE_MAIN       = 'Contact Form Submissions';
+const TABLE_LEAD       = 'Lead Magnet Form';
+```
 
-## Configure & Customize
+### 2. Region Settings
 
-- **Prices**: update `PACKAGE_PRICES` per region in each country file.  
-- **Redirect destinations**: in the gateway script, map ISO2 → `/contact-lk`, `/contact-uk`, `/contact-us`, `/contact-au` (NHS → `/contact-nhs`).  
-- **Fonts**: Poppins included via Google Fonts.  
-- **Placeholders**: `John Doe` etc. can be adjusted in inputs.
+Ensure `COUNTRY_CODE` is unique for each file to prevent session cache conflicts.
 
----
+```javascript
+// Example for UK
+const COUNTRY_CODE = 'UK'; 
+const PACKAGE_PRICES = { essential: '£125', advanced: '£150', ultimate: '£300' };
+```
 
-## Data & Privacy
+### 3. The "Nuclear" Popup Fix
 
-Captured fields: **Name, Email, NHS?, WhatsApp, LinkedIn, Jobs, Locations, Package**.  
-Data is appended to **Google Sheets** via **Apps Script Web App**. IP is used only for country selection and redirect.
+To prevent the popup from showing immediately upon page load, we use strict inline styling.
+**Do not remove the inline style:**
 
----
+```html
+<div id="ds-secure-popup" class="dreamshift-popup-container" style="display:none;">
+```
 
-## Roadmap
-- Reusable page template for UK/US/AU with per-country price configs.
-- Optional Forminator sink as a fallback.
-- Simple admin dashboard to browse/annotate leads.
+-----
 
----
+## Installation Guide
 
-## License
-**MIT** — see `LICENSE`.
+1. **WordPress / Elementor:**
+      * Drag an **HTML Widget** onto your page.
+      * Copy the full code from the specific region file (e.g., `contact-uk.html`).
+      * Paste into the widget.
+2. **Clear Cache:**
+      * If updating from a previous version, **purge your site cache** (WP Rocket/Cloudflare) and browser cache. The new ID `ds-secure-popup` is designed to break old cache chains.
+
+-----
+
+## Troubleshooting
+
+* **Popup shows on load?**
+      * Ensure the HTML div has `style="display:none;"` inline.
+      * Ensure the ID is `ds-secure-popup`.
+* **Phone flag wrong?**
+      * Check the `initialCountry` setting in the `initPhone()` function (e.g., `'gb'`, `'au'`, `'lk'`).
+* **Airtable error?**
+      * Check the browser console (`F12`). If you see `401 Unauthorized`, generate a new Airtable Token.
