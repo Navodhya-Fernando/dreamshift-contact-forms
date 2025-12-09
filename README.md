@@ -47,8 +47,8 @@ graph TD
     B -->|Input Data| C[Airtable - Partial]
     B -->|Steps 1-4| D[Package Selection]
     D -->|Select Package| E[Calendly Embed]
-    E --> F[Airtable - Final (Booked)]
-    D -->|Can't Afford| G[Lead Magnet Table]
+    E --> F[Airtable - Final Booked]
+    D -->|Cannot Afford| G[Lead Magnet Table]
     G --> H[Secure Custom Popup]
 ```
 
